@@ -77,9 +77,47 @@ export default function HomePage() {
   const transfer = async() => {
     if (atm) {
       if (typeof atm.transfer === 'function') {
-        let tx = await atm.transfer(1);
-        await tx.wait();
-        getBalance();
+        const [recipientAddress, setRecipientAddress] = useState("");
+        const [transferAmount, setTransferAmount] = useState(0);
+
+        const handleRecipientAddressChange = (event) => {
+          setRecipientAddress(event.target.value);
+        }
+
+        const handleTransferAmountChange = (event) => {
+          setTransferAmount(event.target.value);
+        }
+
+        const transferFunds = async () => {
+          if (atm) {
+            if (typeof atm.transfer === 'function') {
+              try {
+          const tx = await atm.transfer(recipientAddress, transferAmount);
+          await tx.wait();
+          getBalance();
+          console.log(`Successfully sent ${transferAmount} ETH to ${recipientAddress}`);
+              } catch (error) {
+          console.log("Error occurred while transferring funds:", error);
+              }
+            } else {
+              console.log("Transfer function is not available in the ATM contract");
+            }
+          }
+        }
+
+        // Inside the return statement
+        <>
+          // Inside the return statement
+          <input type="text" value={recipientAddress} onChange={handleRecipientAddressChange} placeholder="Recipient Address" /><input type="number" value={transferAmount} onChange={handleTransferAmountChange} placeholder="Transfer Amount" /></>
+
+        try {
+          const tx = await atm.transfer(recipientAddress, amount);
+          await tx.wait();
+          getBalance();
+          console.log(`Successfully sent ${amount} ETH to ${recipientAddress}`);
+        } catch (error) {
+          console.log("Error occurred while transferring funds:", error);
+        }
       } else {
         console.log("Transfer function is not available in the ATM contract");
       }
